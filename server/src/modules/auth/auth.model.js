@@ -1,7 +1,6 @@
 
 import mongoose from 'mongoose';
-import bcrypt from './../../../node_modules/bcryptjs/index.d';
-
+import bcrypt from "bcryptjs";
 const UserSchema = new mongoose.Schema({
       name: {
             type: String,
@@ -39,7 +38,7 @@ UserSchema.pre("save", async function () {
       this.password = await bcrypt.hash(this.password, 12)
 })
 // compare password 
-UserSchema.methods.comprePassword = async function (inputPassword) {
+UserSchema.methods.comparePassword = async function (inputPassword) {
       return await bcrypt.compare(inputPassword, this.password)
 }
 
