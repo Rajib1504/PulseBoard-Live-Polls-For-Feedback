@@ -2,13 +2,32 @@ import * as authService from "./auth.service.js"
 import ApiResponse from './../../common/utils/api-response.js';
 
 
-const Register = async(req,res)=>{
-const user = authService.register(req.body)
-ApiResponse.created(
-      res,
-      "User created Successfully,Please Login",
-      user
-)
+const Register = async (req, res,next) => {
+      try {
+            const user = await authService.register(req.body)
+            ApiResponse.created(
+                  res,
+                  "User created Successfully,Please Login",
+                  user
+            )
+      } catch (error) {
+            next(error)
+      }
+}
+const login = async (req, res,next) => {
+      try {
+            const { user, refreshToken, accessToken } = await authService.login(req.body)
+            const options = {
+                  httpOnly: true,
+                  secure: process.env.NODE_ENV === "Production"
+            }
+            res.status(200)
+                  .cookie("refreshToken", refreshToken, options);
+            return ApiResponse.ok(res, "login successfully", { user, accessToken })
+
+      } catch (error) {
+            next(error)
+      }
 }
 
-export{Register}
+export { Register, login }
