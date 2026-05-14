@@ -6,7 +6,7 @@ import { Response } from "./response.model.js"
 const submitVote = async (pollId, userId, voteData) => {
       const { deviceId, answers } = voteData
 
-      const poll = await Poll.findById({ pollId })
+      const poll = await Poll.findById(pollId)
       if (!poll) {
             throw ApiError.notfound("Poll not found");
       }
@@ -17,13 +17,17 @@ const submitVote = async (pollId, userId, voteData) => {
             throw ApiError.badRequest("This poll has already expired");
       }
 
+      if (!poll.isAnonymous && !userId) {
+        throw ApiError.unauthorized("This poll is restricted to logged-in users only. Please login to vote.");
+    }
+
       const dynamicCheckQuery = { pollId }
 
       if (userId) {
             dynamicCheckQuery.voterId = userId
-      } else (
+      } else {
             dynamicCheckQuery.deviceId = deviceId
-      )
+      }
       const existingVote = await Response.find(dynamicCheckQuery)
       if (existingVote) {
             throw ApiError.conflict("You have already submitted your vote for this poll");

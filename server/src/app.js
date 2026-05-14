@@ -2,6 +2,7 @@ import express from 'express'
 import AuthRouter from './modules/auth/auth.routes.js'
 import pollRouter from './modules/Poll/poll.routes.js'
 import ApiError from './common/utils/api-error.js'
+import ResponseRouters from './modules/response/response.routes.js';
 const app = express()
 app.use(express.json())
 
@@ -9,7 +10,7 @@ app.use(express.json())
 
 app.use('/api/v1/auth', AuthRouter)
 app.use('/api/v1/Polls', pollRouter)
-
+app.use('/api/v1/response',ResponseRouters)
 app.get('/', (req, res) => {
       res.send('Hello World!from Express')
 })
