@@ -1,14 +1,19 @@
 import express from 'express'
 import AuthRouter from './modules/auth/auth.routes.js'
+import pollRouter from './modules/Poll/poll.routes.js'
+import ApiError from './common/utils/api-error.js'
 const app = express()
 app.use(express.json())
 
 
 
 app.use('/api/v1/auth', AuthRouter)
+app.use('/api/v1/Polls', pollRouter)
+
 app.get('/', (req, res) => {
       res.send('Hello World!from Express')
 })
+
 
 
 app.all("{*path}", (req, res, next) => {

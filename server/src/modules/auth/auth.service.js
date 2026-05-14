@@ -1,6 +1,5 @@
 import User from "./auth.model.js"
 import ApiError from './../../common/utils/api-error.js';
-import comparePassword from "./auth.model.js"
 import crypto from "crypto"
 
 const register = async ({ name, email, password }) => {

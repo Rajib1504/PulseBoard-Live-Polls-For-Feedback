@@ -7,14 +7,14 @@ import jwt from "jsonwebtoken";
 const UserSchema = new mongoose.Schema({
       name: {
             type: String,
-            require: true,
+            required: true,
             minlength: [3, "Name must be at least 3 characters long"],
             trim: true
       },
       email: {
             type: String,
             required: [true, "Email is required"],
-            lowerCase: true,
+            lowercase: true,
             trim: true,
             match: [
                   /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
