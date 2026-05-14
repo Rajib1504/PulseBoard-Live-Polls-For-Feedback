@@ -11,7 +11,7 @@ pollRouter.post(
       "/create",
       verifyJWT,  // validate user login 
       validate(CreatePollDto),// validate poll data format
-      pollController.pollCreate
+      pollController.createPoll
 )
 
 export default pollRouter;
