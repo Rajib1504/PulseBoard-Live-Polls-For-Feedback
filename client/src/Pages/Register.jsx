@@ -1,9 +1,11 @@
+import { useEffect } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import toast from "react-hot-toast";
 import api from "../services/api";
+import { useAuth } from "../context/AuthContext";
 import { User, Mail, Lock } from "lucide-react";
 
 const registerSchema = z.object({
@@ -26,6 +28,14 @@ export default function Register() {
     reset,
     formState: { errors, isSubmitting },
   } = useForm({ resolver: zodResolver(registerSchema) });
+
+  const { isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate({ to: "/my-polls" });
+    }
+  }, [isAuthenticated, navigate]);
 
   const onSubmit = async (data) => {
     const toastId = toast.loading("Creating your account...");

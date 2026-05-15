@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -13,7 +14,7 @@ const loginSchema = z.object({
 });
 
 export default function Login() {
-  const { login } = useAuth();
+  const { login, isAuthenticated: loginAuth } = useAuth();
   const navigate = useNavigate();
   const {
     register,
@@ -21,6 +22,12 @@ export default function Login() {
     reset,
     formState: { errors, isSubmitting },
   } = useForm({ resolver: zodResolver(loginSchema) });
+
+  useEffect(() => {
+    if (loginAuth) {
+      navigate({ to: "/my-polls" });
+    }
+  }, [loginAuth, navigate]);
 
   const onSubmit = async (data) => {
     const toastId = toast.loading("Signing in...");
