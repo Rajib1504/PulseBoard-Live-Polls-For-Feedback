@@ -1,4 +1,3 @@
-// src/Pages/Login.jsx
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -6,116 +5,132 @@ import * as z from "zod";
 import toast from "react-hot-toast";
 import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
+import { Mail, Lock, LogIn } from "lucide-react";
 
-// 🟢 Zod Schema for Validation
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
   password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
 export default function Login() {
-  const { login } = useAuth(); // AuthContext from login
+  const { login } = useAuth();
   const navigate = useNavigate();
-
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm({
-    resolver: zodResolver(loginSchema),
-  });
+  } = useForm({ resolver: zodResolver(loginSchema) });
 
   const onSubmit = async (data) => {
     const toastId = toast.loading("Signing in...");
     try {
       const response = await api.post("/auth/login", data);
-
-      // data save in AuthContext 
       login(response.data.data.user, response.data.data.accessToken);
-
       toast.success("Welcome back!", { id: toastId });
-      reset(); // reset the form
-      navigate({ to: "/" }); 
+      reset();
+      navigate({ to: "/" });
     } catch (error) {
-      const errorMessage =
-        error.response?.data?.message || "Invalid credentials!";
-      toast.error(errorMessage, { id: toastId });
+      toast.error(error.response?.data?.message || "Invalid credentials!", {
+        id: toastId,
+      });
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-[80vh]">
-      <div className="w-full max-w-md p-8 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 transition-colors">
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Welcome back
-          </h2>
-          <p className="text-gray-500 dark:text-gray-400 mt-2">
-            Please enter your details to sign in.
-          </p>
+    <div className="flex items-center justify-center min-h-[80vh] animate-fade-in">
+      <div className="w-full max-w-md">
+        <div className="bg-white dark:bg-card-dark rounded-2xl shadow-xl border border-border dark:border-border-dark overflow-hidden">
+          <div className="h-1 bg-gradient-to-r from-primary via-primary-light to-accent" />
+          <div className="p-8">
+            <div className="text-center mb-8">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mx-auto mb-4 shadow-lg shadow-primary/20">
+                <LogIn size={24} className="text-white" />
+              </div>
+              <h2 className="text-2xl font-bold text-heading dark:text-white">
+                Welcome back
+              </h2>
+              <p className="text-body dark:text-muted mt-1">
+                Please enter your details to sign in.
+              </p>
+            </div>
+
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+              {/* Email */}
+              <div>
+                <label className="block text-sm font-medium text-heading dark:text-slate-300 mb-1.5">
+                  Email address
+                </label>
+                <div className="relative">
+                  <Mail
+                    size={16}
+                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted"
+                  />
+                  <input
+                    {...register("email")}
+                    className={`w-full pl-10 pr-4 py-3 rounded-xl border bg-transparent dark:text-white outline-none transition-all ${
+                      errors.email
+                        ? "border-error"
+                        : "border-border dark:border-border-dark focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    }`}
+                    placeholder="john@example.com"
+                  />
+                </div>
+                {errors.email && (
+                  <p className="text-error text-xs mt-1">
+                    {errors.email.message}
+                  </p>
+                )}
+              </div>
+
+              {/* Password */}
+              <div>
+                <label className="block text-sm font-medium text-heading dark:text-slate-300 mb-1.5">
+                  Password
+                </label>
+                <div className="relative">
+                  <Lock
+                    size={16}
+                    className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted"
+                  />
+                  <input
+                    type="password"
+                    {...register("password")}
+                    className={`w-full pl-10 pr-4 py-3 rounded-xl border bg-transparent dark:text-white outline-none transition-all ${
+                      errors.password
+                        ? "border-error"
+                        : "border-border dark:border-border-dark focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    }`}
+                    placeholder="••••••••"
+                  />
+                </div>
+                {errors.password && (
+                  <p className="text-error text-xs mt-1">
+                    {errors.password.message}
+                  </p>
+                )}
+              </div>
+
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full py-3 rounded-xl text-white font-semibold bg-gradient-to-r from-primary to-primary-light hover:from-primary-dark hover:to-primary disabled:opacity-50 shadow-lg shadow-primary/25 hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300"
+              >
+                {isSubmitting ? "Signing in..." : "Sign In"}
+              </button>
+            </form>
+
+            <p className="text-center text-body dark:text-muted mt-6">
+              Don&apos;t have an account?{" "}
+              <Link
+                to="/register"
+                className="text-primary font-semibold hover:underline"
+              >
+                Sign up
+              </Link>
+            </p>
+          </div>
         </div>
-
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Email address
-            </label>
-            <input
-              {...register("email")}
-              className={`w-full px-4 py-3 rounded-lg border bg-transparent dark:text-white outline-none transition-all ${
-                errors.email
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-primary focus:border-primary"
-              }`}
-              placeholder="john@example.com"
-            />
-            {errors.email && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.email.message}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Password
-            </label>
-            <input
-              type="password"
-              {...register("password")}
-              className={`w-full px-4 py-3 rounded-lg border bg-transparent dark:text-white outline-none transition-all ${
-                errors.password
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-primary focus:border-primary"
-              }`}
-              placeholder="••••••••"
-            />
-            {errors.password && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.password.message}
-              </p>
-            )}
-          </div>
-
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full py-3 px-4 bg-primary hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold rounded-lg shadow-md transition-all"
-          >
-            {isSubmitting ? "Signing in..." : "Sign In"}
-          </button>
-        </form>
-
-        <p className="text-center text-gray-600 dark:text-gray-400 mt-6">
-          Don't have an account?{" "}
-          <Link
-            to="/register"
-            className="text-primary font-semibold hover:underline"
-          >
-            Sign up
-          </Link>
-        </p>
       </div>
     </div>
   );

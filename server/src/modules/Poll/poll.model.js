@@ -53,6 +53,10 @@ const pollSchema = new mongoose.Schema({
             type: Boolean,
             default: true
       },
+      isResultPublished: {
+            type: Boolean,
+            default: false
+      },
       expiresAt: {
             type: Date,
             validate: {

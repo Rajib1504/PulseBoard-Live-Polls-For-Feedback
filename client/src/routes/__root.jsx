@@ -5,6 +5,7 @@ import { AuthProvider, useAuth } from "../context/AuthContext";
 import { ThemeProvider, useTheme } from "../context/ThemeContext";
 import { Toaster } from "react-hot-toast";
 import { Sun, Moon, LogOut, BarChart3 } from "lucide-react";
+import Footer from "../components/Footer";
 
 const Navbar = () => {
   const { theme, toggleTheme } = useTheme();
@@ -19,8 +20,8 @@ const Navbar = () => {
   return (
     <nav className="sticky top-0 z-50 backdrop-blur-xl bg-white/80 dark:bg-slate-900/80 border-b border-slate-200/50 dark:border-slate-700/50 transition-colors duration-300">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-        {/* Logo */}
-        <Link to="/" className="flex items-center gap-2.5 group">
+        {/* Left side: Logo */}
+        <Link to="/" className="flex items-center gap-2.5 group w-1/4">
           <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg shadow-primary/20 group-hover:shadow-primary/40 transition-shadow duration-300">
             <BarChart3 size={18} className="text-white" />
           </div>
@@ -29,15 +30,36 @@ const Navbar = () => {
           </span>
         </Link>
 
-        {/* Right side */}
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1">
+        {/* Center: Navigation Links */}
+        <div className="hidden md:flex items-center justify-center gap-6 flex-1">
+          <Link
+            to="/"
+            hash="features"
+            className="text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary-light transition-colors"
+          >
+            Features
+          </Link>
+          <Link
+            to="/"
+            hash="how-it-works"
+            className="text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary-light transition-colors"
+          >
+            How it Works
+          </Link>
+          {isAuthenticated && (
             <Link
-              to="/"
-              className="px-3.5 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary-light hover:bg-primary-50 dark:hover:bg-slate-800 transition-all duration-200 [&.active]:text-primary [&.active]:bg-primary-50 dark:[&.active]:bg-slate-800"
+              to="/my-polls"
+              className="text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary-light transition-colors [&.active]:text-primary"
             >
-              Home
+              My Dashboard
             </Link>
+          )}
+        </div>
+
+        {/* Right side */}
+        <div className="flex items-center justify-end gap-3 w-1/4">
+          <div className="flex items-center gap-1">
+            {/* Auth Buttons */}
 
             {!isAuthenticated ? (
               <>
@@ -98,9 +120,10 @@ export const Route = createRootRoute({
       <ThemeProvider>
         <div className="min-h-screen bg-surface dark:bg-surface-dark transition-colors duration-300">
           <Navbar />
-          <main className="px-4 sm:px-6 max-w-6xl mx-auto py-8">
+          <main className="flex-grow px-4 sm:px-6 max-w-6xl mx-auto py-8 w-full">
             <Outlet />
           </main>
+          <Footer />
           <Toaster
             position="top-right"
             reverseOrder={false}
