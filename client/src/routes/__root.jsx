@@ -1,23 +1,26 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
+import { AuthProvider } from "../context/AuthContext";
 
 export const Route = createRootRoute({
   component: () => (
-    <>
-      {/* Global Navigation Bar */}
-      <nav className="p-4 flex gap-4 bg-primary text-white shadow-md">
-        <Link to="/" className="[&.active]:font-bold text-lg">
-          Home
-        </Link>
-      </nav>
+    <AuthProvider>
+      <>
+        {/* Global Navigation Bar */}
+        <nav className="p-4 flex gap-4 bg-primary text-white shadow-md">
+          <Link to="/" className="[&.active]:font-bold text-lg">
+            Home
+          </Link>
+        </nav>
 
-      {/* Main Content Scope */}
-      <main className="p-4 max-w-6xl mx-auto">
-        <Outlet />
-      </main>
+        {/* Main Content Scope */}
+        <main className="p-4 max-w-6xl mx-auto">
+          <Outlet />
+        </main>
 
-      <TanStackRouterDevtools position="bottom-right" />
-    </>
+        <TanStackRouterDevtools position="bottom-right" />
+      </>
+    </AuthProvider>
   ),
 });
