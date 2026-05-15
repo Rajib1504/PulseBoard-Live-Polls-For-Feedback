@@ -2,6 +2,7 @@
 import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { AuthProvider } from "../context/AuthContext";
+import { Toaster } from "react-hot-toast";
 
 export const Route = createRootRoute({
   component: () => (
@@ -18,7 +19,7 @@ export const Route = createRootRoute({
         <main className="p-4 max-w-6xl mx-auto">
           <Outlet />
         </main>
-
+        <Toaster position="top-right" reverseOrder={false} />
         <TanStackRouterDevtools position="bottom-right" />
       </>
     </AuthProvider>
