@@ -1,0 +1,7 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #2563eb; /* Electric Blue */
+  --color-secondary: #10b981; /* Emerald Green */
+  --color-dark: #111827; /* Cool Gray */
+}
