@@ -5,7 +5,7 @@ import ApiResponse from './../../common/utils/api-response.js';
 const Register = async (req, res,next) => {
       try {
             const user = await authService.register(req.body)
-            ApiResponse.created(
+            return ApiResponse.created(
                   res,
                   "User created Successfully,Please Login",
                   user

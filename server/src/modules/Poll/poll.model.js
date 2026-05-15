@@ -66,7 +66,7 @@ const pollSchema = new mongoose.Schema({
             type: [questionSchema],
             validate: {
                   validator: function (questionsArray) {
-                        questionsArray.length >= 1
+                        return questionsArray.length >= 1
                   },
                   message: "A poll must have at least 1 question"
             }
