@@ -128,7 +128,7 @@ export default function MyPolls() {
                     )}
                   </div>
                   <h3 className="text-lg font-bold text-heading dark:text-white mb-1 group-hover:text-primary transition-colors">
-                    {poll.title}
+                    {poll.title?.length > 70 ? poll.title.substring(0, 70) + '...' : poll.title}
                   </h3>
                   <div className="flex items-center gap-4 text-sm text-muted">
                     <span className="flex items-center gap-1.5">
