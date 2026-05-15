@@ -28,7 +28,7 @@ export default function PollCard({ poll }) {
 
         {/* Title */}
         <h3 className="text-lg font-bold text-heading dark:text-white mb-2 group-hover:text-primary transition-colors line-clamp-2">
-          {poll.title}
+          {poll.title?.length > 70 ? poll.title.substring(0, 70) + '...' : poll.title}
         </h3>
 
         {/* Footer */}
