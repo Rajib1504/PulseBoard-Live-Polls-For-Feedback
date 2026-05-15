@@ -11,4 +11,4 @@ ResponseRouter.post(
       validate(SubmitResponseDto),  //check device id and answers 
       responseController.submitVote // save the vote
 );
-export default ResponseRouters;
+export default ResponseRouter;

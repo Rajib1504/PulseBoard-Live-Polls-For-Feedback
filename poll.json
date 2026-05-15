@@ -1,0 +1,167 @@
+{
+  "info": {
+    "name": "Poll System API",
+    "description": "API collection for testing authentication, poll creation, and voting logic with proper scoping.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "pollId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Auth Module",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Test User\",\n    \"email\": \"test@example.com\",\n    \"password\": \"StrongPass123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "if(response.success) {",
+                  "    pm.collectionVariables.set(\"accessToken\", response.data.accessToken);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"test@example.com\",\n    \"password\": \"StrongPass123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Poll Module",
+      "item": [
+        {
+          "name": "Create Poll",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "if(response.success) {",
+                  "    pm.collectionVariables.set(\"pollId\", response.data._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Best Programming Language for DSA?\",\n    \"isAnonymous\": true,\n    \"isPublished\": true,\n    \"expiresAt\": \"2026-12-31T23:59:59.000Z\",\n    \"questions\": [\n        {\n            \"text\": \"Which language do you prefer for competitive programming?\",\n            \"isRequired\": true,\n            \"options\": [\n                { \"text\": \"C++\" },\n                { \"text\": \"Java\" },\n                { \"text\": \"Python\" }\n            ]\n        }\n    ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/Polls/create",
+              "host": ["{{baseUrl}}"],
+              "path": ["Polls", "create"]
+            }
+          }
+        },
+        {
+          "name": "Get All Polls",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/Polls",
+              "host": ["{{baseUrl}}"],
+              "path": ["Polls"]
+            }
+          }
+        },
+        {
+          "name": "Get Poll Details By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/Polls/{{pollId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["Polls", "{{pollId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Response Module",
+      "item": [
+        {
+          "name": "Submit Vote (Anonymous / Auth)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{accessToken}}", "description": "Disable this header for anonymous voting" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"deviceId\": \"fingerprint_abc123\",\n    \"answers\": [\n        {\n            \"questionId\": \"<REPLACE_WITH_QUESTION_ID_FROM_GET_POLL>\",\n            \"optionId\": \"<REPLACE_WITH_OPTION_ID_FROM_GET_POLL>\"\n        }\n    ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/response/{{pollId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["response", "{{pollId}}"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

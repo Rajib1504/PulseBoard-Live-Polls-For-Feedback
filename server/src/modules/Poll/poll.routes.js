@@ -13,5 +13,13 @@ pollRouter.post(
       validate(CreatePollDto),// validate poll data format
       pollController.createPoll
 )
+pollRouter.get(
+      "/",
+      pollController.getAllPolls
+);
+pollRouter.get(
+      "/:pollId",
+      pollController.getPollById
+);
 
 export default pollRouter;

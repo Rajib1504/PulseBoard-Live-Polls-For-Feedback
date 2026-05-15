@@ -36,10 +36,9 @@ const UserSchema = new mongoose.Schema({
 }, { timestamps: true })
 
 // password hasing function 
-UserSchema.pre("save", async function (next) {
-      if (!this.isModified("password")) return next()
+UserSchema.pre("save", async function () {
+      if (!this.isModified("password")) return 
       this.password = await bcrypt.hash(this.password, 12)
-      next()
 })
 // compare password 
 UserSchema.methods.comparePassword = async function (inputPassword) {
@@ -49,7 +48,7 @@ UserSchema.methods.comparePassword = async function (inputPassword) {
 UserSchema.methods.generateAccessToken = function () {
       return jwt.sign(
             { _id: this._id, email: this.email },
-            process.env.ACCESS_TOKEN_SECRET,
+            process.env.JWT_ACCESS_SECRET,
             { expiresIn: process.env.JWT_ACCESS_EXPIRES_IN }
       );
 };

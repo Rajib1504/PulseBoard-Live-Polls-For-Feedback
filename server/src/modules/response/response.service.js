@@ -28,7 +28,7 @@ const submitVote = async (pollId, userId, voteData) => {
       } else {
             dynamicCheckQuery.deviceId = deviceId
       }
-      const existingVote = await Response.find(dynamicCheckQuery)
+      const existingVote = await Response.findOne(dynamicCheckQuery)
       if (existingVote) {
             throw ApiError.conflict("You have already submitted your vote for this poll");
       }
