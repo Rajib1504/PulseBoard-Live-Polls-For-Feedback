@@ -20,23 +20,47 @@ api.interceptors.request.use((config) => {
 // Response Interceptor to handle Token Expiration
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    // Check if the error is 401 Unauthorized
-    if (error.response && error.response.status === 401) {
-      // Clear expired auth data
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("user");
+  async (error) => {
+    const originalRequest = error.config;
 
-      // Redirect to login page if we aren't already there
-      if (
-        window.location.pathname !== '/login' && 
-        window.location.pathname !== '/register' &&
-        window.location.pathname !== '/'
-      ) {
-        toast.error("Session expired. Please log in again.");
-        window.location.href = '/login';
+    // Check if the error is 401 Unauthorized and we haven't retried yet
+    if (error.response && error.response.status === 401 && !originalRequest._retry) {
+      // Prevent infinite loops if the refresh token endpoint itself returns 401
+      if (originalRequest.url === "/auth/refresh-token") {
+        return Promise.reject(error);
+      }
+
+      originalRequest._retry = true;
+
+      try {
+        // Attempt to refresh the token
+        const response = await api.post("/auth/refresh-token");
+        const newAccessToken = response.data.data.accessToken;
+
+        // Save new token and update header
+        localStorage.setItem("accessToken", newAccessToken);
+        api.defaults.headers.common["Authorization"] = `Bearer ${newAccessToken}`;
+        originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
+
+        // Retry the original request
+        return api(originalRequest);
+      } catch (refreshError) {
+        // If refresh fails, log the user out
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("user");
+
+        if (
+          window.location.pathname !== "/login" &&
+          window.location.pathname !== "/register" &&
+          window.location.pathname !== "/"
+        ) {
+          toast.error("Session expired. Please log in again.");
+          window.location.href = "/login";
+        }
+        return Promise.reject(refreshError);
       }
     }
+
     return Promise.reject(error);
   }
 );

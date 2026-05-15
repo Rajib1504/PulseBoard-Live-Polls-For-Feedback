@@ -10,6 +10,6 @@ const AuthRouter = Router()
 
 AuthRouter.post("/register", validate(RegisterDto), authController.Register)
 AuthRouter.post("/login", validate(loginDto), authController.login)
-
+AuthRouter.post("/refresh-token", authController.refreshAccessToken)
 
 export default AuthRouter

@@ -20,7 +20,7 @@ import {
 import api from "../services/api";
 import socket from "../services/socket";
 import toast from "react-hot-toast";
-import html2canvas from "html2canvas";
+import { toPng } from "html-to-image";
 import ShareModal from "../components/ShareModal";
 
 const COLORS = ["#6366f1", "#06b6d4", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
@@ -78,16 +78,21 @@ export default function PublicResults() {
       // Small delay to ensure any re-renders are complete
       await new Promise(resolve => setTimeout(resolve, 100));
       
-      const canvas = await html2canvas(element, {
-        scale: 2, // Higher resolution
+      const dataUrl = await toPng(element, {
+        cacheBust: true,
         backgroundColor: document.documentElement.classList.contains("dark") ? "#0f172a" : "#f8fafc",
-        windowWidth: element.scrollWidth,
-        windowHeight: element.scrollHeight
+        pixelRatio: 2,
+        filter: (node) => {
+          // Ignore buttons and share UI during export
+          if (node.hasAttribute && node.hasAttribute("data-html2canvas-ignore")) {
+            return false;
+          }
+          return true;
+        }
       });
       
-      const image = canvas.toDataURL("image/png");
       const link = document.createElement("a");
-      link.href = image;
+      link.href = dataUrl;
       link.download = `Poll-Results-${pollId}.png`;
       link.click();
       

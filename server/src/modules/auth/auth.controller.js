@@ -29,5 +29,14 @@ const login = async (req, res,next) => {
             next(error)
       }
 }
+const refreshAccessToken = async (req, res, next) => {
+      try {
+            const incomingRefreshToken = req.cookies.refreshToken;
+            const newAccessToken = await authService.refreshAccessToken(incomingRefreshToken);
+            return ApiResponse.ok(res, "Access token refreshed successfully", { accessToken: newAccessToken });
+      } catch (error) {
+            next(error);
+      }
+}
 
-export { Register, login }
+export { Register, login, refreshAccessToken };

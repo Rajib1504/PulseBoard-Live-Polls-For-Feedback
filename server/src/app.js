@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import AuthRouter from "./modules/auth/auth.routes.js";
 import pollRouter from "./modules/Poll/poll.routes.js";
 import ApiError from "./common/utils/api-error.js";
@@ -16,6 +17,7 @@ app.use(
   }),
 );
 app.use(express.json());
+app.use(cookieParser());
 
 app.use("/api/v1/auth", AuthRouter);
 app.use("/api/v1/Polls", pollRouter);

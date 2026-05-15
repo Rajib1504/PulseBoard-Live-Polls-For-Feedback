@@ -1,6 +1,7 @@
 import User from "./auth.model.js"
 import ApiError from './../../common/utils/api-error.js';
-import crypto from "crypto"
+import crypto from "crypto";
+import jwt from "jsonwebtoken";
 
 const register = async ({ name, email, password }) => {
       //find if the user exist 
@@ -43,5 +44,34 @@ const login = async ({ email, password }) => {
       return { user: userResponse, accessToken, refreshToken: rawRefreshToken }
 
 }
+const refreshAccessToken = async (rawRefreshToken) => {
+      if (!rawRefreshToken) {
+            throw ApiError.unauthorized("Refresh token is required");
+      }
 
-export { register,login};
+      // Verify the JWT structure
+      let decodedToken;
+      try {
+            decodedToken = jwt.verify(rawRefreshToken, process.env.JWT_REFRESH_SECRET);
+      } catch (error) {
+            throw ApiError.unauthorized("Invalid or expired refresh token");
+      }
+
+      // Find user
+      const user = await User.findById(decodedToken._id);
+      if (!user) {
+            throw ApiError.unauthorized("Invalid refresh token");
+      }
+
+      // Hash the incoming raw token to compare with DB
+      const hashRefreshToken = crypto.createHash("sha256").update(rawRefreshToken).digest("hex");
+      if (user.refreshToken !== hashRefreshToken) {
+            throw ApiError.unauthorized("Refresh token has been revoked or is invalid");
+      }
+
+      // Generate new access token
+      const newAccessToken = user.generateAccessToken();
+      return newAccessToken;
+};
+
+export { register, login, refreshAccessToken };
