@@ -26,7 +26,12 @@ api.interceptors.response.use(
     // Check if the error is 401 Unauthorized and we haven't retried yet
     if (error.response && error.response.status === 401 && !originalRequest._retry) {
       // Prevent infinite loops if the refresh token endpoint itself returns 401
-      if (originalRequest.url === "/auth/refresh-token") {
+      // Also, skip refresh logic if the error comes from login or register
+      if (
+        originalRequest.url.includes("/auth/refresh-token") ||
+        originalRequest.url.includes("/auth/login") ||
+        originalRequest.url.includes("/auth/register")
+      ) {
         return Promise.reject(error);
       }
 
