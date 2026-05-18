@@ -19,7 +19,8 @@ const login = async (req, res,next) => {
             const { user, refreshToken, accessToken } = await authService.login(req.body)
             const options = {
                   httpOnly: true,
-                  secure: process.env.NODE_ENV === "Production"
+                  secure: true,
+                  sameSite: "none"
             }
             res.status(200)
                   .cookie("refreshToken", refreshToken, options);
